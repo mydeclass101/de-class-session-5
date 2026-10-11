@@ -1,0 +1,12 @@
+.venv/
+.env
+__pycache__/
+.ruff_cache/
+# data file comes from the GitHub Release (too big for git)
+data/*.dump
+data/*.part
+# our own DAGs and outputs stay on our machine
+dags/my/*
+!dags/my/.gitkeep
+output/*
+!output/.gitkeep

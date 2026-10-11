@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": ["dags"],
+    "python.analysis.typeCheckingMode": "off",
+    "python.analysis.autoImportCompletions": true,
+    "files.eol": "\n"
+}

@@ -1,0 +1,8 @@
+# pip install -r requirements.txt
+# Only for VS Code: autocomplete + hover docs for Airflow code. Airflow itself runs in Docker
+# (Airflow does not run on Windows). Keep this file ASCII only.
+apache-airflow==3.3.2
+apache-airflow-providers-standard==1.19.0
+apache-airflow-providers-common-sql==2.1.1
+apache-airflow-providers-postgres==7.0.2
+ruff==0.17.0       # lint: ruff check --select AIR --preview dags/my  (finds old Airflow 2 syntax)

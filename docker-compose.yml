@@ -1,0 +1,170 @@
+name: de-session5
+
+# Airflow 3.3.2 แบบย่อจาก docker-compose ทางการ (LocalExecutor: ไม่มี Celery / Redis จึงเบากว่า)
+#   ecommerce-db        : PostgreSQL ข้อมูลร้านค้า (ข้อมูลชุดเดียวกับ MySQL ใน session 3) = data source ของเรา
+#   airflow-db          : PostgreSQL ที่ Airflow ใช้จดสถานะของตัวเอง (metadata DB) เราไม่ต้องยุ่ง
+#   airflow-apiserver   : หน้าเว็บ + API  http://localhost:8080
+#   airflow-scheduler   : ดูเวลา/ลำดับ แล้วสั่งรัน task
+#   airflow-dag-processor: อ่านไฟล์ใน dags/ แปลงเป็น DAG
+#   airflow-triggerer   : รอเหตุการณ์แทน task ที่ "พักรอ" (deferrable)
+
+x-airflow-common: &airflow-common
+  image: apache/airflow:3.3.2
+  environment: &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-db/airflow
+    AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow-apiserver:8080/execution/
+    AIRFLOW__API_AUTH__JWT_SECRET: classroom-only-jwt-secret
+    AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: "true"       # ห้องเรียน: เปิดเว็บได้เลยไม่ต้อง login
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW__DAG_PROCESSOR__REFRESH_INTERVAL: "10"              # เห็นไฟล์ DAG ใหม่ภายใน ~10 วินาที (ค่าเดิม 5 นาที)
+    AIRFLOW__DAG_PROCESSOR__MIN_FILE_PROCESS_INTERVAL: "10"     # แก้ไฟล์แล้วเห็นผลภายใน ~10 วินาที
+    AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: "true"
+    AIRFLOW__CORE__TEST_CONNECTION: Enabled                     # ปุ่ม Test ในหน้า Connections (บทที่ 10)
+    # Connection และ Variable ที่ตั้งผ่าน environment variable (บทที่ 10)
+    AIRFLOW_CONN_ECOMMERCE_DB: postgresql://student:student123@ecommerce-db:5432/ecommerce
+    AIRFLOW_VAR_SHOP_NAME: DE Class Shop
+    AIRFLOW_VAR_REPORT_SETTINGS: '{"top_n": 5, "min_order_amount": 1000}'
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./output:/opt/airflow/output
+    - airflow_logs:/opt/airflow/logs
+  user: "${AIRFLOW_UID:-50000}:0"
+  depends_on: &airflow-common-depends-on
+    airflow-db:
+      condition: service_healthy
+
+services:
+  # ---------- data source ----------
+  ecommerce-data:
+    # ดาวน์โหลดไฟล์ข้อมูลครั้งแรก (ถ้ามีไฟล์ใน data/ แล้วจะข้าม)
+    image: curlimages/curl:8.17.0
+    user: "0:0"
+    environment:
+      DATA_URL: ${DATA_URL:-https://github.com/mydeclass101/de-class-session-5/releases/download/data-v1/ecommerce_pg.dump}
+    volumes:
+      - ./data:/data
+      - ./docker/ecommerce-db/download.sh:/download.sh:ro
+    entrypoint: ["sh", "/download.sh"]
+
+  ecommerce-db:
+    image: postgres:17.6
+    container_name: de5-ecommerce-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ecommerce
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: Asia/Bangkok
+      PGTZ: Asia/Bangkok
+    command: ["postgres", "-c", "timezone=Asia/Bangkok", "-c", "shared_buffers=256MB"]
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"          # DBeaver: localhost:5432 user student / student123
+    volumes:
+      - ecommerce_data:/var/lib/postgresql/data
+      - ./docker/ecommerce-db/init:/docker-entrypoint-initdb.d:ro
+      - ./data:/data:ro
+    healthcheck:
+      test: ["CMD-SHELL", "test ! -f /var/lib/postgresql/data/COURSE_DATA_MISSING && pg_isready -U postgres -d ecommerce && psql -U student -d ecommerce -tAc 'SELECT 1 FROM orders LIMIT 1' | grep -q 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10m                                  # ครั้งแรกต้อง restore ข้อมูล (ไม่กี่นาที)
+    depends_on:
+      ecommerce-data:
+        condition: service_completed_successfully
+
+  # ---------- Airflow ----------
+  airflow-db:
+    image: postgres:17.6
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - airflow_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 20
+
+  airflow-init:
+    <<: *airflow-common
+    command: version
+    environment:
+      <<: *airflow-common-env
+      _AIRFLOW_DB_MIGRATE: "true"                        # สร้าง/อัปเกรดตารางใน airflow-db
+    user: "0:0"
+
+  airflow-apiserver:
+    <<: *airflow-common
+    command: api-server
+    container_name: de5-airflow-apiserver
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${AIRFLOW_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/api/v2/monitor/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    container_name: de5-airflow-scheduler
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+      ecommerce-db:
+        condition: service_healthy
+
+  airflow-dag-processor:
+    <<: *airflow-common
+    command: dag-processor
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-triggerer:
+    <<: *airflow-common
+    command: triggerer
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+volumes:
+  ecommerce_data:
+  airflow_db:
+  airflow_logs:
