@@ -26,23 +26,14 @@ code .
 
 ใน VS Code เปิด Terminal (`` Ctrl+` ``) แล้วพิมพ์ทีละบรรทัด
 
-**Windows**
+**Git Bash**
 
 ```powershell
-copy .env.example .env
+cp .env.example .env
 docker compose up -d
 python -m venv .venv
-.venv\Scripts\python -m pip install -r requirements.txt
-```
-
-**macOS / Linux**
-
-```bash
-cp .env.example .env
-echo "AIRFLOW_UID=$(id -u)" >> .env        # Linux เท่านั้น
-docker compose up -d
-python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
+source .venv/Scripts/activate
+pip install -r requirements.txt
 ```
 
 - `docker compose up -d` ครั้งแรกจะ **ดาวน์โหลด image ของ Airflow (~1 GB)** และ **ไฟล์ข้อมูลร้านค้า (~100 MB) ไปไว้ที่ `data/`** แล้ว restore ลง PostgreSQL
