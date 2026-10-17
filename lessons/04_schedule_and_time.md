@@ -2,7 +2,7 @@
 
 **เป้าหมาย:** ตั้งให้ DAG รันเองทุกวัน แต่ละรอบรู้ว่าต้องดึงข้อมูล **ช่วงไหน** และรันย้อนหลังได้
 
-ตัวอย่างเต็ม: `dags/lessons/lesson_04_schedule_and_time.py`
+ตัวอย่างเต็ม: `examples/lesson_04_schedule_and_time.py`
 
 ## 4.1 ช่วงเวลาของแต่ละรอบ (data interval)
 
@@ -126,7 +126,7 @@ from airflow.providers.standard.operators.bash import BashOperator
 | `timedelta(hours=6)` | ทุก 6 ชั่วโมง |
 | `[Asset("...")]` | เมื่อข้อมูลที่รออัปเดต (บทที่ 12) |
 
-⚠️ **Airflow 3 เปลี่ยนจาก Airflow 2:** cron ธรรมดาอย่าง `"@daily"` ไม่มีช่วงแล้ว ดูได้จาก DAG `lesson_04_cron_trigger`
+⚠️ **Airflow 3 เปลี่ยนจาก Airflow 2:** cron ธรรมดาอย่าง `"@daily"` ไม่มีช่วงแล้ว ดูได้จาก `lesson_04_cron_trigger` ในไฟล์ตัวอย่าง (คัดลอกลง `dags/my/` แล้ว Trigger ดู log)
 ถ้างานต้องรู้ว่า "ดึงข้อมูลช่วงไหน" ให้ใช้ `CronDataIntervalTimetable`
 
 ⚠️ กด **Trigger** เอง (manual) = รอบที่ไม่มีช่วงข้อมูล (`start == end` = เวลาที่กด) ใช้ทดสอบโค้ด แต่ถ้าจะรันข้อมูลวันไหนให้ใช้ backfill

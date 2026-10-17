@@ -77,7 +77,20 @@ docker compose exec airflow-scheduler airflow dags test lesson_00_setup_check
 ## 4. เนื้อหา
 
 เปิดคู่มือในโฟลเดอร์ `lessons/` ทีละบท (ใน VS Code กด `Ctrl+Shift+V` ที่ไฟล์ .md เพื่อดูแบบสวย)
-**พิมพ์โค้ดตามคู่มือลงในโฟลเดอร์ `dags/my/`** ไฟล์ตัวอย่างที่เสร็จแล้วอยู่ใน `dags/lessons/` (อย่าแก้)
+**พิมพ์โค้ดตามคู่มือลงในโฟลเดอร์ `dags/my/`** ไฟล์ตัวอย่างที่เสร็จแล้วอยู่ใน `examples/` (อย่าแก้)
+
+💡 `examples/` อยู่นอก `dags/` จึง **ไม่ขึ้นในหน้าเว็บ** หน้าเว็บมีแค่ `lesson_00_setup_check` กับ DAG ที่เราพิมพ์เอง
+เห็นชัดว่าที่เพิ่งแก้ไปคือ DAG ไหน · ตัวอย่างเปิดอ่านใน VS Code ได้เลย ถ้าอยากรันดูให้คัดลอกลง `dags/my/`
+
+```bash
+cp examples/lesson_05_branching.py dags/my/      # รอ ~10 วินาที DAG lesson_05_branching จะขึ้นในหน้าเว็บ
+cp examples/lesson_11_postgres.py dags/my/       # บทที่ 11 ใช้ไฟล์ .sql ด้วย
+cp -r examples/sql dags/my/                      # → dags/my/sql/*.sql (path ในโค้ดนับจากโฟลเดอร์ของไฟล์ DAG)
+rm dags/my/lesson_05_branching.py                # ดูเสร็จแล้วลบ DAG ก็หายจากหน้าเว็บ
+```
+
+- dag_id ของตัวอย่างขึ้นต้นด้วย `lesson_` ไม่ชนกับ DAG ของเรา (`my_`) แต่ถ้าคัดลอกไฟล์ตัวอย่างเดียวกันไว้ 2 ชื่อ จะเจอ error dag_id ซ้ำ
+- บทที่ 12 มี DAG ชื่อ `daily_sales_report` (จาก `@asset`) ถ้าพิมพ์ 12.3 เองด้วยชื่อเดียวกันอย่าคัดลอกไฟล์ตัวอย่างบทที่ 12 มาพร้อมกัน
 
 | บท | คู่มือ | หัวข้อ |
 |---|---|---|
@@ -102,9 +115,10 @@ docker compose exec airflow-scheduler airflow dags test lesson_00_setup_check
 ## 5. โครงสร้าง repo
 
 ```
-dags/lessons/       DAG ตัวอย่างของทุกบท (อย่าแก้ เวลาผู้สอนอัปเดตจะ git pull ได้ไม่ชน)
-dags/lessons/sql/   ไฟล์ SQL ที่บทที่ 11 ใช้
+dags/               โฟลเดอร์ที่ Airflow อ่าน: มีแค่ lesson_00_setup_check.py (เช็กเครื่อง) + dags/my/
 dags/my/            ที่พิมพ์ DAG ของเราเอง (git ไม่สนใจ)
+examples/           DAG ตัวอย่างของทุกบท ไม่ขึ้นหน้าเว็บ (อย่าแก้ เวลาผู้สอนอัปเดตจะ git pull ได้ไม่ชน)
+examples/sql/       ไฟล์ SQL ที่บทที่ 11 ใช้
 lessons/            คู่มือแต่ละบท
 output/             ไฟล์ที่ DAG เขียนออกมา (ในคอนเทนเนอร์คือ /opt/airflow/output)
 data/               ไฟล์ข้อมูลร้านค้า (ดาวน์โหลดเองตอน docker compose up ครั้งแรก)
@@ -137,7 +151,8 @@ docker compose up -d        # restore ข้อมูลใหม่ (ไม่�
 | `de5-ecommerce-db` ค้างที่ `health: starting` | ครั้งแรกกำลัง restore ข้อมูล รอได้ ดูด้วย `docker compose logs -f ecommerce-db` (รอ `>>> ecommerce restored`) |
 | `de5-ecommerce-db` เป็น `unhealthy` | restore ไม่สำเร็จ: `docker compose down -v` แล้ว `docker compose up -d` |
 | สร้างไฟล์ใน `dags/my/` แล้วไม่เห็น DAG ในหน้าเว็บ | รอ ~10–20 วินาที · ถ้ายังไม่เห็นดู `airflow dags list-import-errors` หรือแถบสีแดงบนหน้า Dags |
-| `DAG ... not found` ตอน `dags test` | ชื่อ `dag_id` ผิด หรือไฟล์มี error (ดูข้อบน) |
+| `DAG ... not found` ตอน `dags test` | ชื่อ `dag_id` ผิด หรือไฟล์มี error (ดูข้อบน) · DAG ตัวอย่างต้องคัดลอกจาก `examples/` ลง `dags/my/` ก่อน (ข้อ 4) |
+| รันตัวอย่างบทที่ 11 แล้ว task พัง `TemplateNotFound: sql/...` | ยังไม่ได้คัดลอกโฟลเดอร์ `examples/sql` ไปเป็น `dags/my/sql` (ข้อ 4) |
 | กด Trigger แล้ว run ค้างที่ `queued` | DAG ถูก pause อยู่: กดสวิตช์ด้านซ้ายของชื่อ DAG ให้เปิด |
 | VS Code ขีดเส้นใต้ `airflow` ว่าหาไม่เจอ | ยังไม่ได้เลือก interpreter `.venv` (ข้อ 2) หรือยังไม่ได้ `pip install -r requirements.txt` |
 | เครื่องช้ามาก / container restart วน | เพิ่ม Memory ของ Docker Desktop เป็น 4 GB ขึ้นไป และปิด stack ของ session อื่น (`docker compose stop` ในโฟลเดอร์นั้น) |

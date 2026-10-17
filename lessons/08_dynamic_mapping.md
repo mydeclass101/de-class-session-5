@@ -2,7 +2,7 @@
 
 **เป้าหมาย:** ไม่รู้ล่วงหน้าว่าจะมีกี่ไฟล์ / กี่วัน / กี่ตาราง ก็ให้ Airflow แตก task ตอนรันได้
 
-ตัวอย่างเต็ม: `dags/lessons/lesson_08_dynamic_mapping.py`
+ตัวอย่างเต็ม: `examples/lesson_08_dynamic_mapping.py`
 
 ## 8.1 ทำไมไม่ใช้ `for`
 

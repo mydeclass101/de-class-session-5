@@ -2,7 +2,7 @@
 
 **เป้าหมาย:** DAG หนึ่งรันเมื่ออีก DAG ทำข้อมูลเสร็จ โดยไม่ต้องเดาเวลา และรอข้อมูล "วันเดียวกัน" ครบก่อนรัน (partition)
 
-ตัวอย่างเต็ม: `dags/lessons/lesson_12_assets_and_triggers.py`
+ตัวอย่างเต็ม: `examples/lesson_12_assets_and_triggers.py`
 
 ## 12.1 ปัญหา
 

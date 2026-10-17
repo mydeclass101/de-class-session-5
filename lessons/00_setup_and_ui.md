@@ -47,7 +47,8 @@
 ## 0.4 พาดูหน้าเว็บ http://localhost:8080
 
 1. **Dags**: รายชื่อ DAG · สวิตช์ซ้ายมือ = pause/unpause (DAG ใหม่ถูก pause ไว้ก่อน) · ▶ = Trigger (รันเดี๋ยวนี้)
-2. คลิกชื่อ `lesson_01_first_dag` → แท็บ **Graph** = หน้าตา DAG · แท็บ **Code** = โค้ดของไฟล์
+2. คลิกชื่อ `lesson_00_setup_check` → แท็บ **Graph** = หน้าตา DAG · แท็บ **Code** = โค้ดของไฟล์
+   (ตอนนี้มี DAG นี้ตัวเดียว DAG ที่เราพิมพ์ใน `dags/my/` จะมาต่อท้ายรายการนี้)
 3. กด ▶ **Trigger** → แท็บ **Grid**: 1 คอลัมน์ = 1 run, 1 ช่อง = 1 task instance
 4. คลิกช่องสีเขียว → **Logs** (ดู print / error) · **XCom** (ค่าที่ task ส่งต่อ, บทที่ 3)
 5. เมนู **Admin** → Variables / Connections (บทที่ 10)
@@ -77,7 +78,10 @@ docker compose exec airflow-scheduler airflow dags test lesson_00_setup_check
 
 ## 0.6 เปิดไฟล์ DAG แรก
 
-เปิด `dags/lessons/lesson_00_setup_check.py` ใน VS Code แล้วลองเอาเมาส์ชี้ที่ `dag`, `task`, `PostgresHook`
+เปิด `dags/lesson_00_setup_check.py` ใน VS Code แล้วลองเอาเมาส์ชี้ที่ `dag`, `task`, `PostgresHook`
 ต้องเห็นคำอธิบายขึ้นมา (มาจาก `.venv`) ถ้าไม่เห็นดู README ข้อ 8
+
+💡 ตัวอย่างเต็มของทุกบทอยู่ใน `examples/` (อยู่นอก `dags/` จึงไม่ขึ้นหน้าเว็บ) เปิดอ่านใน VS Code ได้เลย
+อยากรันดูให้คัดลอกลง `dags/my/` เช่น `cp examples/lesson_01_first_dag.py dags/my/` (README ข้อ 4)
 
 🧪 ในหน้าเว็บ เปิด log ของ task `count_orders` หาบรรทัด `ตาราง orders มี ... แถว` แล้วไปดูแท็บ XCom ของ task เดียวกัน

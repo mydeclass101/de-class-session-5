@@ -7,6 +7,7 @@
 - SQLCheckOperator / SQLColumnCheckOperator : ตรวจข้อมูล ผิด = task พัง
 
 รันวันละรอบ (เวลาไทย) ย้อนหลัง 20–24 ก.ย. ทุกรอบดึงเฉพาะ order ในช่วง [data_interval_start, data_interval_end)
+อยากรันไฟล์นี้: คัดลอกลง dags/my/ พร้อมโฟลเดอร์ sql/ (ไฟล์ .sql ต้องอยู่ใน dags/my/sql/)
 """
 import pendulum
 from airflow.providers.common.sql.operators.sql import (

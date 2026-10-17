@@ -2,7 +2,7 @@
 
 **เป้าหมาย:** เปลี่ยน task เปล่าเป็นงานจริงด้วย Python และ Bash และอ่านโค้ดแบบดั้งเดิม (`with DAG` + Operator) ออก
 
-ตัวอย่างเต็ม: `dags/lessons/lesson_02_tasks_and_operators.py`
+ตัวอย่างเต็ม: `examples/lesson_02_tasks_and_operators.py`
 
 ## 2.1 ⌨️ `@task` = function Python 1 ตัวเป็น task 1 กล่อง
 
@@ -64,7 +64,7 @@ docker compose exec airflow-scheduler airflow dags test my_02_tasks
 ```python
     @task.bash
     def list_dags_folder() -> str:
-        return "ls -la /opt/airflow/dags/lessons | head -5"
+        return "ls -la /opt/airflow/dags/my | head -5"
 ```
 
 และต่อท้ายลำดับ: `start >> greet("นักเรียน") >> check_disk_space() >> list_dags_folder()`
@@ -100,7 +100,7 @@ with DAG(
     )
     list_dags_folder = BashOperator(
         task_id="list_dags_folder",
-        bash_command="ls -la /opt/airflow/dags/lessons | head -5",
+        bash_command="ls -la /opt/airflow/dags/my | head -5",
     )
     start >> greet >> list_dags_folder
 ```

@@ -46,7 +46,7 @@ def lesson_02_taskflow():
 
     @task.bash
     def list_dags_folder() -> str:
-        return "ls -la /opt/airflow/dags/lessons | head -5"     # return คำสั่ง bash ที่จะรัน
+        return "ls -la /opt/airflow/dags/my | head -5"          # return คำสั่ง bash ที่จะรัน
 
     start = EmptyOperator(task_id="start")
     start >> greet("นักเรียน") >> check_disk_space() >> list_dags_folder()
@@ -72,7 +72,7 @@ with DAG(
     )
     list_dags_folder = BashOperator(
         task_id="list_dags_folder",
-        bash_command="ls -la /opt/airflow/dags/lessons | head -5",
+        bash_command="ls -la /opt/airflow/dags/my | head -5",
     )
     start >> greet >> list_dags_folder
 

@@ -3,7 +3,7 @@
 **เป้าหมาย:** เขียน DAG ได้เอง และต่อลำดับ task ได้ทุกแบบ
 เริ่มจาก **task เปล่า (`EmptyOperator`)** ที่ไม่ทำอะไรเลย เพื่อวาง "โครง" ของงานให้ถูกก่อน แล้วค่อยใส่งานจริงทีหลัง
 
-ตัวอย่างเต็ม: `dags/lessons/lesson_01_first_dag.py`
+ตัวอย่างเต็ม: `examples/lesson_01_first_dag.py` (เปิดอ่านใน VS Code · อยากรันดูให้คัดลอกลง `dags/my/` README ข้อ 4)
 
 ## 1.1 ⌨️ สร้างไฟล์ `dags/my/my_01_first_dag.py`
 
@@ -89,7 +89,7 @@ cross_downstream([a, b], [c, d])   # a→c, a→d, b→c, b→d
 
 ⚠️ ลำดับที่วนกลับ (`a >> b >> a`) ไม่ได้ เพราะ DAG ห้ามวน (Acyclic) ไฟล์จะขึ้น import error
 
-ดูตัวอย่างทุกแบบใน DAG `lesson_01_dependencies` แท็บ Graph
+ดูตัวอย่างทุกแบบใน `lesson_01_dependencies` ของไฟล์ตัวอย่าง (อยากเห็นแท็บ Graph: คัดลอกไฟล์ลง `dags/my/`)
 
 ## 1.4 เมื่อไฟล์พัง
 

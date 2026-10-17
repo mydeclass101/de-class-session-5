@@ -2,7 +2,7 @@
 
 **เป้าหมาย:** DAG ที่มี task หลายสิบตัวยังอ่านง่าย และสร้างกลุ่มหน้าตาเดียวกันซ้ำได้
 
-ตัวอย่างเต็ม: `dags/lessons/lesson_06_task_groups.py`
+ตัวอย่างเต็ม: `examples/lesson_06_task_groups.py`
 
 ## 6.1 ⌨️ `TaskGroup` แบบ `with`
 

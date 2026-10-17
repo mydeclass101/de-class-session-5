@@ -2,7 +2,7 @@
 
 **เป้าหมาย:** ใช้ Operator และ Hook คุยกับฐานข้อมูลร้านค้า โดยดึงเฉพาะข้อมูลของ **ช่วงเวลาของรอบนั้น**
 
-ตัวอย่างเต็ม: `dags/lessons/lesson_11_postgres.py` + `dags/lessons/sql/*.sql`
+ตัวอย่างเต็ม: `examples/lesson_11_postgres.py` + `examples/sql/*.sql` (อยากรันดู: คัดลอกทั้งไฟล์และโฟลเดอร์ `sql` ลง `dags/my/` README ข้อ 4)
 
 ข้อมูลชุดเดียวกับ MySQL ใน session 3 · ลองเปิด DBeaver ต่อ PostgreSQL (README ข้อ 2) แล้ว `SELECT * FROM orders LIMIT 10`
 
@@ -87,7 +87,7 @@ web         81 orders      144,879.00 บาท
 | `%(start)s::timestamptz AT TIME ZONE 'Asia/Bangkok'` | data interval เป็น **UTC** → แปลงเป็น **เวลาไทยไม่มี timezone** ให้ตรงกับคอลัมน์ `ordered_at` 🔁 บทที่ 4 |
 | `daily_sales.output` | ผลของ SELECT = list ของแถว 🔁 บทที่ 3 |
 
-⚠️ ไม่ใช่ทุก argument ที่รองรับ `{{ }}`: `SQLCheckOperator` แปลง template ได้แค่ `sql` (ไม่รวม `parameters`) ดูใน `lesson_11_postgres.py`
+⚠️ ไม่ใช่ทุก argument ที่รองรับ `{{ }}`: `SQLCheckOperator` แปลง template ได้แค่ `sql` (ไม่รวม `parameters`) ดูใน `examples/lesson_11_postgres.py`
 วิธีเช็ก: ชี้เมาส์ที่ชื่อ Operator ใน VS Code หรือดูหัวข้อ "templated" ในเอกสารของ Operator นั้น
 
 ## 11.3 ⌨️ PostgresHook ใน @task
@@ -134,7 +134,7 @@ from airflow.providers.postgres.hooks.postgres import PostgresHook
 | `hook.run(sql, parameters=...)` | รันคำสั่งที่ไม่ต้องการผล |
 | `hook.insert_rows(table, rows, target_fields=[...])` | ใส่หลายแถวจาก Python |
 
-## 11.4 รอข้อมูล + เขียนผล + ตรวจข้อมูล (ดูใน `lesson_11_postgres.py`)
+## 11.4 รอข้อมูล + เขียนผล + ตรวจข้อมูล (ดูใน `examples/lesson_11_postgres.py`)
 
 | task | Operator | ทำอะไร |
 |---|---|---|

@@ -2,7 +2,7 @@
 
 **เป้าหมาย:** ให้ DAG ตัดสินใจเองว่าจะรัน task ไหน ข้ามอะไร และ task ไหนต้องรันเสมอ
 
-ตัวอย่างเต็ม: `dags/lessons/lesson_05_branching.py` (กด Trigger แล้วเปลี่ยนค่าในฟอร์มดูได้)
+ตัวอย่างเต็ม: `examples/lesson_05_branching.py` (คัดลอกลง `dags/my/` แล้วกด Trigger เปลี่ยนค่าในฟอร์มดูได้)
 
 ## 5.1 ⌨️ `@task.branch` = เลือกทาง
 

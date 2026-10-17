@@ -2,7 +2,7 @@
 
 **เป้าหมาย:** ไม่เขียนค่าที่เปลี่ยนได้หรือรหัสผ่านลงในโค้ดตรง ๆ
 
-ตัวอย่างเต็ม: `dags/lessons/lesson_10_params_variables_connections.py`
+ตัวอย่างเต็ม: `examples/lesson_10_params_variables_connections.py`
 
 🔁 session 4 บท 5.6: "รหัสผ่านห้ามอยู่ในโค้ด โค้ดขึ้น git รหัสก็หลุด" ใน Airflow ใช้ Connection แทน `.env`
 
